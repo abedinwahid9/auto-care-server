@@ -22,6 +22,33 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const database = client.db("carsDB");
+    const carsCollection = database.collection("carsCollection");
+
+    app.get("/cars", async (req, res) => {
+      const cursor = await carsCollection.find();
+
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
+
+    app.get("/cars/:category", async (req, res) => {
+      const category = req.params.category;
+
+      const query = { category: category };
+
+      const cursor = await carsCollection.find(query);
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
+    app.post("/cars", async (req, res) => {
+      const newCars = req.body;
+      const result = await carsCollection.insertOne(newCars);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
