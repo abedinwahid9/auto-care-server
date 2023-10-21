@@ -23,7 +23,9 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const database = client.db("carsDB");
+    const database1 = client.db("cartDB");
     const carsCollection = database.collection("carsCollection");
+    const cartCollection = database1.collection("cartCollection");
 
     app.get("/cars", async (req, res) => {
       const cursor = await carsCollection.find();
@@ -43,6 +45,23 @@ async function run() {
 
       res.send(result);
     });
+    app.get("/cars/cart/email", async (req, res) => {
+      const cursor = await cartCollection.find();
+
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
+    app.get("/cars/cart/email/:email", async (req, res) => {
+      const email = req.params.email;
+
+      const query = { email: email };
+
+      const cursor = await cartCollection.find(query);
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
 
     app.get("/cars/category/:id", async (req, res) => {
       const id = req.params.id;
@@ -57,6 +76,14 @@ async function run() {
     app.post("/cars", async (req, res) => {
       const newCars = req.body;
       const result = await carsCollection.insertOne(newCars);
+      res.send(result);
+    });
+
+    app.post("/cars/cart", async (req, res) => {
+      const newCarsCart = req.body;
+
+      console.log(newCarsCart);
+      const result = await cartCollection.insertOne(newCarsCart);
       res.send(result);
     });
 
