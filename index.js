@@ -94,7 +94,7 @@ async function run() {
       const updateCars = req.body;
 
       console.log(updateCars);
-      const coffee = {
+      const cart = {
         $set: {
           photoUrl: updateCars.photoUrl,
           productName: updateCars.productName,
@@ -106,7 +106,19 @@ async function run() {
         },
       };
 
-      const result = await carsCollection.updateOne(filter, coffee, options);
+      const result = await carsCollection.updateOne(filter, cart, options);
+
+      res.send(result);
+    });
+
+    app.delete("/mycart/:id", async (req, res) => {
+      const id = req.params.id;
+
+      console.log(id);
+
+      const query = { _id: new ObjectId(id) };
+
+      const result = await cartCollection.deleteOne(query);
 
       res.send(result);
     });
